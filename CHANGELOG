@@ -6,6 +6,9 @@
 # Note: last records on top
 #
 
+Version 0.2: 20170417
+    * Zen of Spb Python Chat
+
 Version 0.1: 20170416
     * import this — zen of python
     * import __hello__ - Hello world

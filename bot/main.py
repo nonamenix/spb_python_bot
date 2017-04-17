@@ -57,29 +57,25 @@ async def hello(chat: Chat, message):
 
 @bot.command("/?import this")
 async def zen(chat: Chat, message):
+    # TODO: fetch it from chat_zen_url = "https://raw.githubusercontent.com/spbpython/orgs-wiki/master/chat/this.md"
     await chat.send_chat_action('typing')
     await send_code(chat, """
-The Zen of Python, by Tim Peters
+# The Zen of SPb Python Chat
+*(Inspired by "The Zen of Python, by Tim Peters")*
 
-Beautiful is better than ugly.
-Explicit is better than implicit.
-Simple is better than complex.
-Complex is better than complicated.
-Flat is better than nested.
-Sparse is better than dense.
-Readability counts.
-Special cases aren't special enough to break the rules.
-Although practicality beats purity.
-Errors should never pass silently.
-Unless explicitly silenced.
-In the face of ambiguity, refuse the temptation to guess.
-There should be one-- and preferably only one --obvious way to do it.
-Although that way may not be obvious at first unless you're Dutch.
-Now is better than never.
-Although never is often better than *right* now.
-If the implementation is hard to explain, it's a bad idea.
-If the implementation is easy to explain, it may be a good idea.
-Namespaces are one honking great idea -- let's do more of those!
+- Short inroduction of yourself is better than "hello".
+- Link to gist is better than source paste.
+- One long message is better than many short.
+- Editing the message is better than correcting via another one.
+- Staying on topic is better than offtopic.
+- Good topic is worth discussing though.
+- Unless it is started by a link to Habrahabr.
+- Politeness counts.
+- Bad mood is not a good reason to break the rules.
+- Don't ask to ask just ask.
+- Text message is better than voice message.
+- Unless it is voice conference.
+- Git repos are one honking great idea -- let's do more of those!
 """)
 
 
