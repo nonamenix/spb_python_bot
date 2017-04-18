@@ -8,7 +8,7 @@ The Zen of SPb Python Chat
 import this
 ```
 
-[Read Zen of SPb Python Chat](https://raw.githubusercontent.com/spbpython/orgs-wiki/master/chat/this.md)
+[Read Zen of SPb Python Chat](https://github.com/spbpython/orgs-wiki/blob/master/chat/this.md)
 
 
 Hello world
