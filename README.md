@@ -1,10 +1,33 @@
 SPb Python Bot
 ==============
 
-```
-/import __hello__  # hello world
-``` 
+The Zen of SPb Python Chat
+--------------------------
 
 ```
-/import this  # The Zen of SPb Python Chat
- ```
+import this  
+```
+
+
+Hello world
+-----------
+
+```
+import __hello__ 
+``` 
+
+Let me google for you
+---------------------
+
+```
+/wiki query
+/w query
+
+/google query
+/g query
+```
+
+PEPs link
+---------
+
+Match peps in messages and send links for them.
