@@ -5,6 +5,10 @@
 # Note: log only changes which go into release
 # Note: last records on top
 #
+Version 0.3 20170418
+    * Moderator commands that allowed only for moderators
+    * Let me search for you in google and wiki
+
 
 Version 0.2: 20170417
     * Zen of Spb Python Chat
