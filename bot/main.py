@@ -26,7 +26,7 @@ def get_moderators():
     ]
     try:
         moderators = os.environ['MODERATORS']
-    except IndexError:
+    except KeyError:
         pass
     else:
         moderators = [int(m.strip()) for m in moderators.split(' ')]
@@ -83,7 +83,8 @@ _(Inspired by "The Zen of Python, by Tim Peters")_
 def reply_with_let_me_search_for_you(chat: Chat, search_url: str, query: str):
     return chat.send_text(
         search_url.format(query=quote(query)),
-        reply_to_message_id=chat.message["message_id"]
+        reply_to_message_id=chat.message["message_id"],
+        disable_web_page_preview='true',
     )
 
 
