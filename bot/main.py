@@ -118,7 +118,7 @@ if SHOW_PEP_INFO:
                 return resp.status == 200
 
 
-    @bot.moderator_command(".*pep-?(?P<pep>\d{1,4})")
+    @bot.moderator_command("\#.*pep-?(?P<pep>\d{1,4})")
     async def peps(chat: Chat, matched):
         try:
             pep = int(matched.group('pep'))
