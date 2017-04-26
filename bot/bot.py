@@ -48,7 +48,7 @@ class Bot(BaseBot):
 
         chat = Chat.from_message(self, message)
 
-        if message['from']['id'] in self.moderators:
+        if message['from']['id'] in self.moderators and 'text' in message:
             for patterns, handler in self._moderators_commands:
                 m = re.search(patterns, message["text"], re.I)
                 if m:

@@ -6,6 +6,9 @@
 # Note: last records on top
 #
 
+Version 0.3.3 20170426
+    * Fix answer fo non-text message
+
 Version 0.3.2 20170426
     * Match peps with hashtag
 
