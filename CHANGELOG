@@ -6,6 +6,9 @@
 # Note: last records on top
 #
 
+Version 0.3.2 20170426
+    * Match peps with hashtag
+
 Version 0.3.1 20170418
     * Disable web page preview for "let me search for you"
 
