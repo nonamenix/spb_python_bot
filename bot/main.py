@@ -51,12 +51,12 @@ async def ping(chat, message):
     await chat.reply("pong")
 
 
-@bot.moderator_command("/?import __hello__")
+@bot.command("/?import __hello__")
 async def hello(chat: Chat, message):
     await send_code(chat, " Hello world")
 
 
-@bot.moderator_command("/?import this")
+@bot.command("/?import this")
 async def zen(chat: Chat, message):
     # TODO: fetch it from chat_zen_url = "https://raw.githubusercontent.com/spbpython/orgs-wiki/master/chat/this.md"
 
@@ -118,7 +118,7 @@ if SHOW_PEP_INFO:
                 return resp.status == 200
 
 
-    @bot.moderator_command("\#.*pep-?(?P<pep>\d{1,4})")
+    @bot.command("\#.*pep-?(?P<pep>\d{1,4})")
     async def peps(chat: Chat, matched):
         try:
             pep = int(matched.group('pep'))
@@ -127,6 +127,7 @@ if SHOW_PEP_INFO:
         else:
             if await is_pep_exists(pep):
                 await chat.send_text(pep_link.format(pep), reply_to_message_id=chat.message["message_id"])
+
 
 if __name__ == "__main__":
     logger.info("Running...")
