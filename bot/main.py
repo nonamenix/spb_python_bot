@@ -53,7 +53,7 @@ async def ping(chat, message):
 
 @bot.command("/?import __hello__")
 async def hello(chat: Chat, message):
-    await send_code(chat, " Hello world")
+    await send_code(chat, "Hello world")
 
 
 @bot.command("/?import this")
