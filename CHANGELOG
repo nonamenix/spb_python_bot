@@ -6,6 +6,10 @@
 # Note: last records on top
 #
 
+Version 0.3.7 20170806
+    * Fix spaces in Hello world
+    * Update python version
+
 Version 0.3.4 20170613
     * Allow import this for all
 
