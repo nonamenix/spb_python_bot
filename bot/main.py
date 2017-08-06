@@ -40,12 +40,6 @@ bot = Bot(
 )
 
 
-def send_code(chat: Chat, text: str):
-    """Wrap text to code snippet and send as answer"""
-
-    return chat.reply("```{}```".format(text), parse_mode="Markdown")
-
-
 @bot.moderator_command("/?ping")
 async def ping(chat, message):
     await chat.reply("pong")
@@ -53,7 +47,7 @@ async def ping(chat, message):
 
 @bot.command("/?import __hello__")
 async def hello(chat: Chat, message):
-    await send_code(chat, "Hello world")
+    await chat.reply("Hello world")
 
 
 @bot.command("/?import this")
@@ -127,7 +121,6 @@ if SHOW_PEP_INFO:
         else:
             if await is_pep_exists(pep):
                 await chat.send_text(pep_link.format(pep), reply_to_message_id=chat.message["message_id"])
-
 
 if __name__ == "__main__":
     logger.info("Running...")
