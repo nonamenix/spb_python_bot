@@ -1,4 +1,5 @@
 import os
+from datetime import timedelta, datetime
 
 from urllib.parse import quote
 
@@ -16,7 +17,6 @@ ch = logging.StreamHandler()
 logger.addHandler(ch)
 
 DEBUG = "DEBUG" in os.environ
-SHOW_PEP_INFO = "SHOW_PEP_INFO" in os.environ
 
 
 def get_moderators():
@@ -40,6 +40,29 @@ bot = Bot(
 )
 
 
+def no_more_than_once_every(interval=timedelta(minutes=5), key: str = None):
+    restrictions = {}
+
+    def actual_decorator(func):
+        def wrapper(*args, **kwargs):
+            result = None
+            try:
+                restriction = restrictions[key]
+            except KeyError:
+                restrictions[key] = datetime.now() + interval
+                result = func(*args, **kwargs)
+            else:
+                if datetime.now() > restriction:
+                    restrictions[key] = datetime.now() + interval
+                    result = func(*args, **kwargs)
+
+            return result
+
+        return wrapper
+
+    return actual_decorator
+
+
 @bot.moderator_command("/?ping")
 async def ping(chat, message):
     await chat.reply("pong")
@@ -50,7 +73,11 @@ async def hello(chat: Chat, message):
     await chat.reply("Hello world")
 
 
+@bot.command("/rules")
 @bot.command("/?import this")
+@bot.command("/?import __this__")
+@bot.command("\`import __this__\`")
+@no_more_than_once_every(interval=timedelta(minutes=5), key='zen_of_chat')
 async def zen(chat: Chat, message):
     # TODO: fetch it from chat_zen_url = "https://raw.githubusercontent.com/spbpython/orgs-wiki/master/chat/this.md"
 
@@ -102,25 +129,25 @@ async def wiki(chat: Chat, matched):
     )
 
 
-if SHOW_PEP_INFO:
-    pep_link = "https://www.python.org/dev/peps/pep-{0:04d}/"
+pep_link = "https://www.python.org/dev/peps/pep-{0:04d}/"
 
 
-    async def is_pep_exists(pep):
-        async with aiohttp.ClientSession() as session:
-            async with session.get(pep_link.format(pep)) as resp:
-                return resp.status == 200
+async def is_pep_exists(pep):
+    async with aiohttp.ClientSession() as session:
+        async with session.get(pep_link.format(pep)) as resp:
+            return resp.status == 200
 
 
-    @bot.command("\#.*pep-?(?P<pep>\d{1,4})")
-    async def peps(chat: Chat, matched):
-        try:
-            pep = int(matched.group('pep'))
-        except ValueError:
-            pass
-        else:
-            if await is_pep_exists(pep):
-                await chat.send_text(pep_link.format(pep), reply_to_message_id=chat.message["message_id"])
+@bot.command("\#.*pep-?(?P<pep>\d{1,4})")
+async def peps(chat: Chat, matched):
+    try:
+        pep = int(matched.group('pep'))
+    except ValueError:
+        pass
+    else:
+        if await is_pep_exists(pep):
+            await chat.send_text(pep_link.format(pep), reply_to_message_id=chat.message["message_id"])
+
 
 if __name__ == "__main__":
     logger.info("Running...")
