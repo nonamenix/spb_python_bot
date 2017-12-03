@@ -5,6 +5,7 @@ The Zen of SPb Python Chat
 --------------------------
 
 ```python
+import __this__
 import this
 ```
 
@@ -47,7 +48,6 @@ Environment variables
 ```basg
 BOT_TOKEN  # telegram bot token
 BOT_LOGGING_LEVEL  # logging level
-SHOW_PEP_INFO  # match PEPs in messages
 MODERATORS  # moderators identifiers splited by space
 DEBUG  # bot autoreload on file save
 ```
