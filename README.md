@@ -24,12 +24,16 @@ Let me google for you
 
 ### Google
 
+Команда разрешена только для модератора
+
 ```
 /google query
 /g query
 ```
 
 ### Wiki 
+
+Команда разрешена только для модератора
 
 ```
 /wiki query
