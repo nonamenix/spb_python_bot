@@ -1,23 +1,43 @@
 from typing import List
 
-from aiotg import Bot as BaseBot, API_TIMEOUT, Chat
+from aiotg import Bot as BaseBot, API_TIMEOUT, Chat, asyncio, aiohttp
 import re
 
 
 class Bot(BaseBot):
-    def __init__(self, api_token: str, moderators: List[int],
-                 api_timeout: int = API_TIMEOUT,
-                 botan_token=None,
-                 name=None):
+    healthcheckio_url = 'https://hchk.io/{token}'
+    healthcheckio_interval = 150  # seconds
+    healthcheckio_token = None
+
+    def __init__(
+            self,
+            api_token: str, moderators: List[int],
+            api_timeout: int = API_TIMEOUT,
+            botan_token: str = None,
+            healthcheckio_token: str = None,
+            name=None):
         super(Bot, self).__init__(
             api_token=api_token,
             api_timeout=api_timeout,
             botan_token=botan_token,
             name=name
         )
-
+        self.healthcheckio_token = healthcheckio_token
         self.moderators = moderators
         self._moderators_commands = []
+
+    async def still_alive(self):
+        async with aiohttp.ClientSession() as session:
+            async with session.get(self.healthcheckio_url.format(token=self.healthcheckio_token)):
+                pass
+        await asyncio.sleep(self.healthcheckio_interval)
+        await self.still_alive()
+
+    def run(self, debug=False, reload=None):
+        if self.healthcheckio_token:
+            loop = asyncio.get_event_loop()
+            loop.create_task(self.still_alive())
+        super(Bot, self).run(debug=debug, reload=reload)
 
     def add_moderators_command(self, regexp, fn):
         """

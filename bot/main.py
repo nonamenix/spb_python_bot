@@ -36,6 +36,7 @@ def get_moderators():
 
 bot = Bot(
     api_token=os.environ["BOT_TOKEN"],
+    healthcheckio_token=os.environ["HEALTHCHECKIO_TOKEN"],
     moderators=get_moderators()
 )
 
