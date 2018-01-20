@@ -1,6 +1,8 @@
 SPb Python Bot
 ==============
 
+![spbpython bot status](https://healthchecks.io/badge/67e18dff-5605-4a51-9792-2f8614/REOpd_Jz/spbpython.svg)
+
 The Zen of SPb Python Chat
 --------------------------
 
@@ -69,6 +71,7 @@ Run with condo
         :Env [
             "BOT_TOKEN=339614247:************************************"
             "MODERATORS=132982472 59323058"
+            "HEALTHCHECKIO_TOKEN=********-****-****-****-************"
             "BOT_LOGGING_LEVEL=ERROR"
         ]
         :HostConfig {
