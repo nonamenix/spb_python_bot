@@ -6,6 +6,12 @@
 # Note: last records on top
 #
 
+Version 0.4.2 20180120
+    * Add user agent to monitoring
+
+Version 0.4.1 20180120
+    * Add monitoring
+
 Version 0.3.7 20170806
     * Fix spaces in Hello world
     * Update python version

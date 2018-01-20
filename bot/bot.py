@@ -3,6 +3,8 @@ from typing import List
 from aiotg import Bot as BaseBot, API_TIMEOUT, Chat, asyncio, aiohttp
 import re
 
+USER_AGENT = 'SPbPython / 0.4.2'
+
 
 class Bot(BaseBot):
     healthcheckio_url = 'https://hchk.io/{token}'
@@ -28,7 +30,9 @@ class Bot(BaseBot):
 
     async def still_alive(self):
         async with aiohttp.ClientSession() as session:
-            async with session.get(self.healthcheckio_url.format(token=self.healthcheckio_token)):
+            async with session.get(
+                    self.healthcheckio_url.format(token=self.healthcheckio_token),
+                    headers={'User-Agent': USER_AGENT}):
                 pass
         await asyncio.sleep(self.healthcheckio_interval)
         await self.still_alive()
