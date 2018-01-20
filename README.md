@@ -5,6 +5,7 @@ The Zen of SPb Python Chat
 --------------------------
 
 ```python
+import __this__
 import this
 ```
 
@@ -23,12 +24,16 @@ Let me google for you
 
 ### Google
 
+Команда разрешена только для модератора
+
 ```
 /google query
 /g query
 ```
 
 ### Wiki 
+
+Команда разрешена только для модератора
 
 ```
 /wiki query
@@ -47,7 +52,6 @@ Environment variables
 ```basg
 BOT_TOKEN  # telegram bot token
 BOT_LOGGING_LEVEL  # logging level
-SHOW_PEP_INFO  # match PEPs in messages
 MODERATORS  # moderators identifiers splited by space
 DEBUG  # bot autoreload on file save
 ```
