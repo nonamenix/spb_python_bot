@@ -6,6 +6,9 @@
 # Note: last records on top
 #
 
+Version 0.5 20180121
+    * Write all chat updates to mongodb
+
 Version 0.4.2 20180120
     * Add user agent to monitoring
 

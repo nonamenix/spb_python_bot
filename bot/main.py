@@ -4,8 +4,9 @@ from datetime import timedelta, datetime
 from urllib.parse import quote
 
 from aiotg import Chat, aiohttp
-from bot import Bot
+
 import logging
+from bot import Bot
 
 # Logging
 logging.basicConfig(
@@ -34,10 +35,13 @@ def get_moderators():
     return moderators
 
 
+# spb_python_bot
 bot = Bot(
     api_token=os.environ["BOT_TOKEN"],
     healthcheckio_token=os.environ["HEALTHCHECKIO_TOKEN"],
-    moderators=get_moderators()
+    moderators=get_moderators(),
+    mongo_url=os.environ.get('MONGO_URL'),
+    mongo_healthcheckio_token=os.environ.get('MONGO_HEALTHCHECKIO_TOKEN')
 )
 
 
