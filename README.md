@@ -73,6 +73,8 @@ Run with condo
             "MODERATORS=132982472 59323058"
             "HEALTHCHECKIO_TOKEN=********-****-****-****-************"
             "BOT_LOGGING_LEVEL=ERROR"
+            "MONGO_URL=mongodb://spbpythonbot:Lg2vxjoBT3oRmDd4XnyJ2VD6hJC3jb@ds046677.mlab.com:46677/spb_python_bot"
+            "MONGO_HEALTHCHECKIO_TOKEN=fb6c17b8-a64a-41bf-83c7-267ee5124368"
         ]
         :HostConfig {
             :RestartPolicy {:Name "always"}
