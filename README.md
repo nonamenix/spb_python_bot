@@ -1,7 +1,7 @@
 SPb Python Bot
 ==============
 
-![spbpython bot status](https://healthchecks.io/badge/67e18dff-5605-4a51-9792-2f8614/REOpd_Jz/spbpython.svg) ![tag](https://img.shields.io/github/tag/nonamenix/spb_python_bot.svg)
+![spbpython bot status](https://healthchecks.io/badge/67e18dff-5605-4a51-9792-2f8614/REOpd_Jz/spbpython.svg) [![tag](https://img.shields.io/github/tag/nonamenix/spb_python_bot.svg)](./CHANGELOG.md)
 
 
 The Zen of SPb Python Chat
