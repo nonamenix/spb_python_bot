@@ -16,7 +16,7 @@ class Bot(BaseBot):
     mongo_healthcheckio_interval = 1800
     mongo_max_db_size = 512 * 1024 * 1024  # mlab.com free limitation
     mongo_alert_on_fullness = .5
-    updates_collection = None
+    saved_updates_kinds = ['message', 'edited_message', 'inline_query', 'chosen_inline_result', 'callback_query']
 
     def __init__(
             self,
@@ -39,13 +39,13 @@ class Bot(BaseBot):
 
         if mongo_url is not None:
             mongo_client = motor.motor_asyncio.AsyncIOMotorClient(mongo_url)
-            self.mongo_db = mongo_client[mongo_url.split('/')[-1]]
-            self.updates_collection = self.mongo_db['updates']
+            self.mongodb = mongo_client[mongo_url.split('/')[-1]]
             self.mongo_healthcheckio_token = mongo_healthcheckio_token
 
-    async def save_update_to_mongo(self, message):
-        if self.updates_collection is not None:
-            await self.updates_collection.insert_one(message)
+    async def save_update_to_mongo(self, update):
+        collection = list(set(self.saved_updates_kinds).intersection(update.keys()))[0]
+        if self.mongodb is not None:
+            await self.mongodb[collection].insert_one(update)
 
     async def still_alive(self):
         async with aiohttp.ClientSession(headers={'User-Agent': USER_AGENT}) as session:
@@ -55,7 +55,7 @@ class Bot(BaseBot):
         await self.still_alive()
 
     async def mongo_still_enough(self):
-        stats = await self.mongo_db.command('dbstats')
+        stats = await self.mongodb.command('dbstats')
         file_size = stats['fileSize']
 
         fullness = file_size / self.mongo_max_db_size
@@ -121,7 +121,7 @@ class Bot(BaseBot):
         return handler
 
     def _process_update(self, update):
-        if self.updates_collection is not None:
+        if self.mongodb is not None:
             loop = asyncio.get_event_loop()
             loop.create_task(self.save_update_to_mongo(update))
 
