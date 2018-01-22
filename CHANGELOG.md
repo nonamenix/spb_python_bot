@@ -9,6 +9,9 @@ Note: log only changes which go into release
 Note: last records on top 
 --->
 
+### Version 0.5.1 20180122
+
+* Split updates to different collections
 
 ### Version 0.5 20180121
 
