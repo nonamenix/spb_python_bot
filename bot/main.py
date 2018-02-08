@@ -18,6 +18,7 @@ ch = logging.StreamHandler()
 logger.addHandler(ch)
 
 DEBUG = "DEBUG" in os.environ
+VERSION_URL = "https://img.shields.io/github/tag/nonamenix/spb_python_bot.json"
 
 
 def get_moderators():
@@ -66,6 +67,15 @@ def no_more_than_once_every(interval=timedelta(minutes=5), key: str = None):
         return wrapper
 
     return actual_decorator
+
+
+@bot.command('/version')
+async def version(chat, message):
+    async with aiohttp.ClientSession() as session:
+        async with session.get(VERSION_URL) as resp:
+            data = await resp.json()
+            version = data['value']
+            await chat.reply("version: {}".format(version))
 
 
 @bot.moderator_command("/?ping")

@@ -8,6 +8,9 @@ Changelog Format:
 Note: log only changes which go into release
 Note: last records on top 
 --->
+### Version 0.5.3 20180208
+
+* /version command 
 
 ### Version 0.5.2 20180208
 
