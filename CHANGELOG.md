@@ -9,6 +9,10 @@ Note: log only changes which go into release
 Note: last records on top 
 --->
 
+### Version 0.5.2 20180208
+
+* fix message processing 
+
 ### Version 0.5.1 20180122
 
 * Split updates to different collections

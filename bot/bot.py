@@ -4,7 +4,7 @@ from aiotg import Bot as BaseBot, API_TIMEOUT, Chat, asyncio, aiohttp
 import motor.motor_asyncio
 import re
 
-USER_AGENT = 'SPbPython / 0.4.2'
+USER_AGENT = 'SPbPython / 0.5.2'
 
 
 class Bot(BaseBot):
@@ -109,7 +109,7 @@ class Bot(BaseBot):
 
         chat = Chat.from_message(self, message)
 
-        if message['from']['id'] in self.moderators and 'text' in message:
+        if 'text' in message and message['from']['id'] in self.moderators:
             for patterns, handler in self._moderators_commands:
                 m = re.search(patterns, message["text"], re.I)
                 if m:
