@@ -49,6 +49,15 @@ PEPs link
 Match peps in messages and send links for them.
 
 
+### Chats
+
+Показывает чаты и ссылки
+
+```
+/chats
+/links
+```
+
 Environment variables
 ---------------------
 
