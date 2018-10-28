@@ -8,6 +8,11 @@ Changelog Format:
 Note: log only changes which go into release
 Note: last records on top 
 --->
+
+### Version 0.5.4 20181028
+
+* /chats command
+
 ### Version 0.5.3 20180208
 
 * /version command 
