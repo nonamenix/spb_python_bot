@@ -78,7 +78,7 @@ async def version(chat, message):
             await chat.reply("version: {}".format(version))
 
 
-@bot.moderator_command("/?ping")
+@bot.moderator_command("/?ping$")
 async def ping(chat, message):
     await chat.reply("pong")
 
@@ -162,6 +162,22 @@ async def peps(chat: Chat, matched):
     else:
         if await is_pep_exists(pep):
             await chat.send_text(pep_link.format(pep), reply_to_message_id=chat.message["message_id"])
+
+
+@bot.command("/about")
+@bot.command("/chats")
+@bot.command("/links")
+async def chats(chat: Chat, matched):
+    await chat.reply("""
+    - [SPb Python News Channel](https://t.me/spbpythonnews)
+    - [SPb Python](https://t.me/spbpython)
+    - [SPb Python Drinkup & Bar Hopping](https://t.me/joinchat/BA9zxD_Df8rTlNpiXhDSig)
+    - SPb Python Biking ask neatsoft or nonamenix
+    - IT-FIT ask jetbootsmaker
+    - [Site](https://spbpython.guru/)
+    - [Group on facebook](https://www.facebook.com/groups/spbpython/) 
+    - [Meetup.com](https://www.meetup.com/ru-RU/spbpython/)
+    """, parse_mode="Markdown")
 
 
 if __name__ == "__main__":
