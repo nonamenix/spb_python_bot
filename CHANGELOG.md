@@ -8,6 +8,10 @@ Changelog Format:
 Note: log only changes which go into release
 Note: last records on top 
 --->
+### Version 0.5.5 20181105
+
+* Change chat command content
+
 
 ### Version 0.5.4 20181028
 
