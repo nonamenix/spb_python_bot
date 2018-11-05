@@ -169,15 +169,16 @@ async def peps(chat: Chat, matched):
 @bot.command("/links")
 async def chats(chat: Chat, matched):
     await chat.reply("""
-    - [SPb Python News Channel](https://t.me/spbpythonnews)
-    - [SPb Python](https://t.me/spbpython)
-    - [SPb Python Drinkup & Bar Hopping](https://t.me/joinchat/BA9zxD_Df8rTlNpiXhDSig)
-    - SPb Python Biking ask neatsoft or nonamenix
-    - IT-FIT ask jetbootsmaker
-    - [Site](https://spbpython.guru/)
-    - [Group on facebook](https://www.facebook.com/groups/spbpython/) 
-    - [Meetup.com](https://www.meetup.com/ru-RU/spbpython/)
-    """, parse_mode="Markdown")
+*SPb Python Chats and Channels*    
+
+- [News Channel](https://t.me/spbpythonnews)
+- [Main chat](https://t.me/spbpython)
+- [Site](https://spbpython.guru/)
+- [Drinkup & Bar Hopping](https://t.me/joinchat/BA9zxD_Df8rTlNpiXhDSig) 
+- [Biking](https://t.me/joinchat/B-0myFDmUqDvwWU4e58WQw)
+- [IT-FIT](https://t.me/joinchat/B-0myE_XfRFQvoLiVscDGQ)
+- [Facebook Group](https://www.facebook.com/groups/spbpython/) and [Page](https://www.facebook.com/spbpython/)
+- [Meetup.com](https://www.meetup.com/ru-RU/spbpython/)""", parse_mode="Markdown")
 
 
 if __name__ == "__main__":
