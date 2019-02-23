@@ -8,6 +8,11 @@ Changelog Format:
 Note: log only changes which go into release
 Note: last records on top 
 --->
+### Version 0.5.6 20190223
+
+* Import single rules from this
+
+
 ### Version 0.5.5 20181105
 
 * Change chat command content

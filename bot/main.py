@@ -1,17 +1,17 @@
 import os
+import logging
 from datetime import timedelta, datetime
-
 from urllib.parse import quote
 
 from aiotg import Chat, aiohttp
 
-import logging
 from bot import Bot
+import content
 
 # Logging
 logging.basicConfig(
-    level=getattr(logging, os.environ.get('BOT_LOGGING_LEVEL', 'DEBUG')),
-    format='%(asctime)s | %(name)s | %(levelname)s - %(message)s'
+    level=getattr(logging, os.environ.get("BOT_LOGGING_LEVEL", "DEBUG")),
+    format="%(asctime)s | %(name)s | %(levelname)s - %(message)s",
 )
 logger = logging.getLogger(__name__)
 ch = logging.StreamHandler()
@@ -21,18 +21,31 @@ DEBUG = "DEBUG" in os.environ
 VERSION_URL = "https://img.shields.io/github/tag/nonamenix/spb_python_bot.json"
 
 
+flatten = lambda l: [item for sublist in l for item in sublist]
+
+
+def make_zen_md(rules, wrap=False):
+    rules = ["- {}".format(rule) for rule in rules]
+
+    if wrap:
+        rules.insert(0, "...")
+        rules.append("...")
+
+    return "\n".join([
+        content.chat_rules_header,
+        *rules
+    ])
+
+
 def get_moderators():
-    moderators = [
-        132982472,  # nonamenix
-        59323058  # lig11
-    ]
+    moderators = [132982472, 59323058]  # nonamenix  # lig11
     try:
-        moderators = os.environ['MODERATORS']
+        moderators = os.environ["MODERATORS"]
     except KeyError:
         pass
     else:
-        moderators = [int(m.strip()) for m in moderators.split(' ')]
-    logger.info(moderators)
+        moderators = [int(m.strip()) for m in moderators.split(" ")]
+    logger.info("Moderators: %s", moderators)
     return moderators
 
 
@@ -41,8 +54,8 @@ bot = Bot(
     api_token=os.environ["BOT_TOKEN"],
     healthcheckio_token=os.environ["HEALTHCHECKIO_TOKEN"],
     moderators=get_moderators(),
-    mongo_url=os.environ.get('MONGO_URL'),
-    mongo_healthcheckio_token=os.environ.get('MONGO_HEALTHCHECKIO_TOKEN')
+    mongo_url=os.environ.get("MONGO_URL"),
+    mongo_healthcheckio_token=os.environ.get("MONGO_HEALTHCHECKIO_TOKEN"),
 )
 
 
@@ -69,12 +82,12 @@ def no_more_than_once_every(interval=timedelta(minutes=5), key: str = None):
     return actual_decorator
 
 
-@bot.command('/version')
+@bot.command("/version")
 async def version(chat, message):
     async with aiohttp.ClientSession() as session:
         async with session.get(VERSION_URL) as resp:
             data = await resp.json()
-            version = data['value']
+            version = data["value"]
             await chat.reply("version: {}".format(version))
 
 
@@ -88,39 +101,33 @@ async def hello(chat: Chat, message):
     await chat.reply("Hello world")
 
 
+@bot.command("/?from this import (?P<key>.+)")
+async def rule_of_zen(chat: Chat, matched):
+    key = matched.group("key")
+    rules = [rules for keys, rules in content.rules if key in keys][0]
+
+    if len(rules) > 0:
+        await chat.reply(make_zen_md(rules, wrap=True), parse_mode="Markdown")
+    else:
+        await chat.reply(content.rule_not_found.format(key), parse_mode="Markdown")
+
+
 @bot.command("/rules")
 @bot.command("/?import this")
 @bot.command("/?import __this__")
 @bot.command("\`import __this__\`")
-@no_more_than_once_every(interval=timedelta(minutes=5), key='zen_of_chat')
+@no_more_than_once_every(interval=timedelta(minutes=5), key="zen_of_chat")
 async def zen(chat: Chat, message):
     # TODO: fetch it from chat_zen_url = "https://raw.githubusercontent.com/spbpython/orgs-wiki/master/chat/this.md"
 
-    await chat.reply("""
-*The Zen of SPb Python Chat*
-_(Inspired by "The Zen of Python, by Tim Peters")_
-
-- Short introduction of yourself is better than "hello".
-- Link to gist is better than source paste.
-- One long message is better than many short.
-- Editing the message is better than correcting via another one.
-- Staying on topic is better than offtopic.
-- Good topic is worth discussing though.
-- Unless it is started by a link to Habrahabr.
-- Politeness counts.
-- Bad mood is not a good reason to break the rules.
-- Don't ask to ask just ask.
-- Text message is better than voice message.
-- Unless it is voice conference.
-- Git repos are one honking great idea — let's do more of those!
-""", parse_mode="Markdown")
+    await chat.reply(make_zen_md(flatten([rules for _, rules in content.rules])), parse_mode="Markdown")
 
 
 def reply_with_let_me_search_for_you(chat: Chat, search_url: str, query: str):
     return chat.send_text(
         search_url.format(query=quote(query)),
         reply_to_message_id=chat.message["message_id"],
-        disable_web_page_preview='true',
+        disable_web_page_preview="true",
     )
 
 
@@ -130,7 +137,7 @@ async def google(chat: Chat, matched):
     await reply_with_let_me_search_for_you(
         chat,
         search_url="https://www.google.ru/search?q={query}",
-        query=matched.group('query')
+        query=matched.group("query"),
     )
 
 
@@ -140,7 +147,7 @@ async def wiki(chat: Chat, matched):
     await reply_with_let_me_search_for_you(
         chat,
         search_url="https://en.wikipedia.org/w/index.php?search={query}",
-        query=matched.group('query')
+        query=matched.group("query"),
     )
 
 
@@ -156,19 +163,22 @@ async def is_pep_exists(pep):
 @bot.command("\#.*pep-?(?P<pep>\d{1,4})")
 async def peps(chat: Chat, matched):
     try:
-        pep = int(matched.group('pep'))
+        pep = int(matched.group("pep"))
     except ValueError:
         pass
     else:
         if await is_pep_exists(pep):
-            await chat.send_text(pep_link.format(pep), reply_to_message_id=chat.message["message_id"])
+            await chat.send_text(
+                pep_link.format(pep), reply_to_message_id=chat.message["message_id"]
+            )
 
 
 @bot.command("/about")
 @bot.command("/chats")
 @bot.command("/links")
 async def chats(chat: Chat, matched):
-    await chat.reply("""
+    await chat.reply(
+        """
 *SPb Python Chats and Channels*    
 
 - [News Channel](https://t.me/spbpythonnews)
@@ -178,7 +188,9 @@ async def chats(chat: Chat, matched):
 - [Biking](https://t.me/joinchat/B-0myFDmUqDvwWU4e58WQw)
 - [IT-FIT](https://t.me/joinchat/B-0myE_XfRFQvoLiVscDGQ)
 - [Facebook Group](https://www.facebook.com/groups/spbpython/) and [Page](https://www.facebook.com/spbpython/)
-- [Meetup.com](https://www.meetup.com/ru-RU/spbpython/)""", parse_mode="Markdown")
+- [Meetup.com](https://www.meetup.com/ru-RU/spbpython/)""",
+        parse_mode="Markdown",
+    )
 
 
 if __name__ == "__main__":
