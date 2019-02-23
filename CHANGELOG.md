@@ -2,21 +2,17 @@
 
 * Add help for this module
 
-
 ### 0.5.7
 
 * Update python version
-
 
 ### 0.5.6
 
 * Import single rules from this
 
-
 ### 0.5.5
 
 * Change chat command content
-
 
 ### 0.5.4
 
