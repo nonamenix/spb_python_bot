@@ -1,3 +1,8 @@
+### 0.5.8
+
+* Add help for this module
+
+
 ### 0.5.7
 
 * Update python version

@@ -31,10 +31,7 @@ def make_zen_md(rules, wrap=False):
         rules.insert(0, "...")
         rules.append("...")
 
-    return "\n".join([
-        content.chat_rules_header,
-        *rules
-    ])
+    return "\n".join([content.chat_rules_header, *rules])
 
 
 def get_moderators():
@@ -101,6 +98,23 @@ async def hello(chat: Chat, message):
     await chat.reply("Hello world")
 
 
+@bot.command("/?help\(this\)")
+async def rule_help(chat: Chat, message):
+    body = []
+    for keys, rules in content.rules:
+        if len(keys) > 0:
+            row = ">>> from this import {}".format(keys[0])
+            if len(keys) > 1:
+                row += "  # {}".format(", ".join(keys[1:]))
+            body.append(row)
+            body.extend(rules)
+            body.append("")
+
+    await chat.reply(
+        content.help_test.format(examples="\n".join(body)), parse_mode="Markdown"
+    )
+
+
 @bot.command("/?from this import (?P<key>.+)")
 async def rule_of_zen(chat: Chat, matched):
     key = matched.group("key")
@@ -112,15 +126,17 @@ async def rule_of_zen(chat: Chat, matched):
         await chat.reply(content.rule_not_found.format(key), parse_mode="Markdown")
 
 
-@bot.command("/rules")
+@bot.command("/?rules")
+@bot.command("/?zen")
 @bot.command("/?import this")
-@bot.command("/?import __this__")
-@bot.command("\`import __this__\`")
 @no_more_than_once_every(interval=timedelta(minutes=5), key="zen_of_chat")
 async def zen(chat: Chat, message):
     # TODO: fetch it from chat_zen_url = "https://raw.githubusercontent.com/spbpython/orgs-wiki/master/chat/this.md"
 
-    await chat.reply(make_zen_md(flatten([rules for _, rules in content.rules])), parse_mode="Markdown")
+    await chat.reply(
+        make_zen_md(flatten([rules for _, rules in content.rules])),
+        parse_mode="Markdown",
+    )
 
 
 def reply_with_let_me_search_for_you(chat: Chat, search_url: str, query: str):

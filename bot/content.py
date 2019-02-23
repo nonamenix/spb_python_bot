@@ -3,11 +3,13 @@ chat_rules_header = """
 _(Inspired by "The Zen of Python, by Tim Peters")_
 """
 
+
 rule_not_found = """
 Traceback (most recent call last):
   File "<stdin>", line 1, in <module>
 ImportError: cannot import name '{}'
 """
+
 
 rules = [
     [
@@ -34,24 +36,31 @@ rules = [
             "Unless it is started by a link to Habrahabr.",
         ],
     ],
+    [[], ["Politeness counts."]],  # from this import politeness
     [
-        ["politeness"],  # from this import politeness
-        ["Politeness counts."]
+        [],  # from this import bad_mood
+        ["Bad mood is not a good reason to break the rules."],
     ],
+    [["ask"], ["Don't ask to ask just ask."]],  # from this import ask
     [
-        ["bad_mood"],  # from this import bad_mood
-        ["Bad mood is not a good reason to break the rules."]
+        [],  # from this import voice
+        [
+            "Text message is better than voice message.",
+            "Unless it is voice conference.",
+        ],
     ],
-    [
-        ["ask"],  # from this import ask
-        ["Don't ask to ask just ask."]
-    ],
-    [
-        ["text", "voice"],  # from this import voice
-        ["Text message is better than voice message.", "Unless it is voice conference."]
-    ],
-    [
-        [],
-        ["Git repos are one honking great idea — let's do more of those!"]
-    ],
+    [[], ["Git repos are one honking great idea — let's do more of those!"]],
 ]
+
+help_test = """
+Help on module this: 
+
+*NAME*
+    this
+
+*EXAMPLES*
+
+```
+{examples}
+```
+"""
