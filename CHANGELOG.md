@@ -1,3 +1,7 @@
+### 0.5.11 
+
+* fix message processing
+
 ### 0.5.10
 
 * fix bot without mongo_url 
