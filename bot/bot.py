@@ -13,6 +13,7 @@ class Bot(BaseBot):
     healthcheckio_token = None
 
     mongo_healthcheckio_token = None
+    mongodb = None
     mongo_healthcheckio_interval = 1800
     mongo_max_db_size = 512 * 1024 * 1024  # mlab.com free limitation
     mongo_alert_on_fullness = 0.5
