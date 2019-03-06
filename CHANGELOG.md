@@ -1,3 +1,7 @@
+### 0.5.10
+
+* fix bot without mongo_url 
+
 ### 0.5.8
 
 * Add help for this module

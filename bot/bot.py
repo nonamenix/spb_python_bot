@@ -4,7 +4,7 @@ from aiotg import Bot as BaseBot, API_TIMEOUT, Chat, asyncio, aiohttp
 import motor.motor_asyncio
 import re
 
-USER_AGENT = "SPbPython / 0.5.5"
+USER_AGENT = "SPbPython / 0.5.10"
 
 
 class Bot(BaseBot):
