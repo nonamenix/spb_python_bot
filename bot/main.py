@@ -2,6 +2,7 @@ import os
 import logging
 from datetime import timedelta, datetime
 from urllib.parse import quote
+from uuid import uuid4
 
 from aiotg import Chat, aiohttp
 
@@ -209,6 +210,35 @@ async def chats(chat: Chat, matched):
     )
 
 
+functions = ['/version', 'import __hello__', 
+            'import this', 'zen', '/about', 
+            'from this import hi', 'from this import gist', 
+            'from this import long_better', 'from this import correct', 
+            'from this import offtopic', 'from this import politeness', 
+            'from this import ask', 'from this import mood',
+            'from this import voice', 'from this import git']
+
+
+@bot.inline
+async def inline_query(query):
+    """Find autocomplite for inline query"""
+
+    results = []
+    
+    for func in functions:
+        if query.query in func:
+            results.append({
+                "type": "article",
+                "title": func,
+                "id": "{}".format(uuid4()),
+                "input_message_content": {"message_text": func},
+            }
+            )
+    return query.answer(results)
+
+
 if __name__ == "__main__":
     logger.info("Running...")
     bot.run(debug=DEBUG)
+    bot.run()
+    
