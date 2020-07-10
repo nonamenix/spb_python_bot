@@ -240,5 +240,4 @@ async def inline_query(query):
 if __name__ == "__main__":
     logger.info("Running...")
     bot.run(debug=DEBUG)
-    bot.run()
     
