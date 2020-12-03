@@ -1,3 +1,7 @@
+## 0.6
+
+* Add inline commands
+
 ### 0.5.12
 
 * fix requirements
