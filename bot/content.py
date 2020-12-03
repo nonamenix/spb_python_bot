@@ -81,6 +81,7 @@ about_chat = """
 - [Meetup.com](https://www.meetup.com/ru-RU/spbpython/)
 """
 
+
 def make_zen_md(rules, wrap=False):
     rules = ["- {}".format(rule) for rule in rules]
 
@@ -91,14 +92,11 @@ def make_zen_md(rules, wrap=False):
     return "\n".join([chat_rules_header, *rules])
 
 
-inline_commands = (
-    "/version", "import __hello__", "import this", "zen", "/about", "from this import"
-)
-
-
 def make_queries_from_rules(rules):
     return [
         f"from this import {keys[0]}" for keys, _ in rules
     ]
 
-import_queries = make_queries_from_rules(rules)
+inline_commands = (
+    "/version", "import __hello__", "import this", "zen", "/about", *make_queries_from_rules(rules)
+)

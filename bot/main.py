@@ -192,23 +192,16 @@ async def chats(chat: Chat, matched):
 async def inline_query(query):
     """Autocomplite for inline query"""
 
-    commands = []
-    
-    for command in content.inline_commands:
-        if query.query in command:
-            commands.append(command)
-            
-    if "from " in query.query:
-        for command in content.import_queries:
-            if query.query in command:
-                commands.append(command)
-
-    return query.answer([{
-        "type": "article",
-        "title": command,
-        "id": f"{uuid4()}",
-        "input_message_content": {"message_text": command},
-    } for command in commands[:7]])
+    return query.answer([
+        {
+            "type": "article",
+            "title": command,
+            "id": f"{uuid4()}",
+            "input_message_content": {"message_text": command},
+        }
+        for command in content.inline_commands 
+        if query.query in command
+    ])
 
 
 if __name__ == "__main__":
