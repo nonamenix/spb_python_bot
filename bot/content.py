@@ -36,20 +36,20 @@ rules = [
             "Unless it is started by a link to Habrahabr.",
         ],
     ],
-    [[], ["Politeness counts."]],  # from this import politeness
+    [["politeness"], ["Politeness counts."]],  # from this import politeness
     [
-        [],  # from this import bad_mood
+        ["mood"],  # from this import bad_mood
         ["Bad mood is not a good reason to break the rules."],
     ],
     [["ask"], ["Don't ask to ask just ask."]],  # from this import ask
     [
-        [],  # from this import voice
+        ["voice"],  # from this import voice
         [
             "Text message is better than voice message.",
             "Unless it is voice conference.",
         ],
     ],
-    [[], ["Git repos are one honking great idea — let's do more of those!"]],
+    [["git"], ["Git repos are one honking great idea — let's do more of those!"]],
 ]
 
 help_test = """
