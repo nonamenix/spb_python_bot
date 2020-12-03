@@ -51,8 +51,6 @@ bot = Bot(
     api_token=os.environ["BOT_TOKEN"],
     healthcheckio_token=os.environ["HEALTHCHECKIO_TOKEN"],
     moderators=get_moderators(),
-    mongo_url=os.environ.get("MONGO_URL"),
-    mongo_healthcheckio_token=os.environ.get("MONGO_HEALTHCHECKIO_TOKEN"),
 )
 
 

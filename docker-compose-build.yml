@@ -1,0 +1,5 @@
+version: '2'
+services:
+  bot:
+    image: nonamenix/spb_python_bot
+    env_file: .env

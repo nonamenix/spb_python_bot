@@ -1,7 +1,6 @@
 from typing import List
 
 from aiotg import Bot as BaseBot, API_TIMEOUT, Chat, asyncio, aiohttp
-import motor.motor_asyncio
 import re
 
 USER_AGENT = "SPbPython / 0.5.10"
@@ -12,11 +11,6 @@ class Bot(BaseBot):
     healthcheckio_interval = 150  # seconds
     healthcheckio_token = None
 
-    mongo_healthcheckio_token = None
-    mongodb = None
-    mongo_healthcheckio_interval = 1800
-    mongo_max_db_size = 512 * 1024 * 1024  # mlab.com free limitation
-    mongo_alert_on_fullness = 0.5
     saved_updates_kinds = [
         "message",
         "edited_message",
@@ -32,8 +26,6 @@ class Bot(BaseBot):
         api_timeout: int = API_TIMEOUT,
         botan_token: str = None,
         healthcheckio_token: str = None,
-        mongo_url=None,
-        mongo_healthcheckio_token=None,
         name=None,
     ):
         super(Bot, self).__init__(
@@ -46,15 +38,8 @@ class Bot(BaseBot):
         self.moderators = moderators
         self._moderators_commands = []
 
-        if mongo_url is not None:
-            mongo_client = motor.motor_asyncio.AsyncIOMotorClient(mongo_url)
-            self.mongodb = mongo_client[mongo_url.split("/")[-1]]
-            self.mongo_healthcheckio_token = mongo_healthcheckio_token
 
-    async def save_update_to_mongo(self, update):
-        collection = list(set(self.saved_updates_kinds).intersection(update.keys()))[0]
-        if self.mongodb is not None:
-            await self.mongodb[collection].insert_one(update)
+    
 
     async def still_alive(self):
         async with aiohttp.ClientSession(headers={"User-Agent": USER_AGENT}) as session:
@@ -65,33 +50,12 @@ class Bot(BaseBot):
         await asyncio.sleep(self.healthcheckio_interval)
         await self.still_alive()
 
-    async def mongo_still_enough(self):
-        stats = await self.mongodb.command("dbstats")
-        file_size = stats["fileSize"]
 
-        fullness = file_size / self.mongo_max_db_size
-        user_agent = "SPbPython - {}%".format(fullness * 100)
-
-        if fullness <= self.mongo_alert_on_fullness:
-            async with aiohttp.ClientSession(
-                headers={"User-Agent": user_agent}
-            ) as session:
-                await session.get(
-                    self.healthcheckio_url.format(token=self.mongo_healthcheckio_token)
-                )
-
-        await asyncio.sleep(self.mongo_healthcheckio_interval)
-        await self.mongo_still_enough()
 
     def run(self, debug=False, reload=None):
-        if self.healthcheckio_token or self.mongo_healthcheckio_token:
+        if self.healthcheckio_token is not None:
             loop = asyncio.get_event_loop()
-
-            if self.healthcheckio_token is not None:
-                loop.create_task(self.still_alive())
-
-            if self.mongo_healthcheckio_token is not None:
-                loop.create_task(self.mongo_still_enough())
+            loop.create_task(self.still_alive())
 
         super(Bot, self).run(debug=debug, reload=reload)
 
@@ -138,10 +102,3 @@ class Bot(BaseBot):
         handler = super(Bot, self)._process_message(message)
 
         return handler
-
-    def _process_update(self, update):
-        if self.mongodb is not None:
-            loop = asyncio.get_event_loop()
-            loop.create_task(self.save_update_to_mongo(update))
-
-        super(Bot, self)._process_update(update)

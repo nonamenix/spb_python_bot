@@ -1,3 +1,8 @@
+### 0.5.12
+
+* fix requirements
+* delete mongo
+
 ### 0.5.11 
 
 * fix message processing
