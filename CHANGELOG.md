@@ -1,3 +1,7 @@
+## 0.6.1
+
+* Fix inline commands
+
 ## 0.6
 
 * Add inline commands

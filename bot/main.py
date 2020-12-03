@@ -202,13 +202,13 @@ async def inline_query(query):
         for command in content.import_queries:
             if query.query in command:
                 commands.append(command)
-    
-    return [{
+
+    return query.answer([{
         "type": "article",
         "title": command,
         "id": f"{uuid4()}",
         "input_message_content": {"message_text": command},
-    } for command in commands[:7]]
+    } for command in commands[:7]])
 
 
 if __name__ == "__main__":
