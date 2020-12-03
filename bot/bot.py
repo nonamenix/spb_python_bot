@@ -38,9 +38,6 @@ class Bot(BaseBot):
         self.moderators = moderators
         self._moderators_commands = []
 
-
-    
-
     async def still_alive(self):
         async with aiohttp.ClientSession(headers={"User-Agent": USER_AGENT}) as session:
             await session.get(
@@ -49,8 +46,6 @@ class Bot(BaseBot):
 
         await asyncio.sleep(self.healthcheckio_interval)
         await self.still_alive()
-
-
 
     def run(self, debug=False, reload=None):
         if self.healthcheckio_token is not None:
@@ -87,6 +82,7 @@ class Bot(BaseBot):
     def _process_message(self, message):
 
         chat = Chat.from_message(self, message)
+        
 
         if (
             "text" in message

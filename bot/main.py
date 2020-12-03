@@ -25,16 +25,6 @@ VERSION_URL = "https://img.shields.io/github/tag/nonamenix/spb_python_bot.json"
 flatten = lambda l: [item for sublist in l for item in sublist]
 
 
-def make_zen_md(rules, wrap=False):
-    rules = ["- {}".format(rule) for rule in rules]
-
-    if wrap:
-        rules.insert(0, "...")
-        rules.append("...")
-
-    return "\n".join([content.chat_rules_header, *rules])
-
-
 def get_moderators():
     moderators = [132982472, 59323058]  # nonamenix  # lig11
     try:
@@ -117,10 +107,10 @@ async def rule_help(chat: Chat, message):
 @bot.command("/?from this import (?P<key>.+)")
 async def rule_of_zen(chat: Chat, matched):
     key = matched.group("key")
-    rules = [rules for keys, rules in content.rules if key in keys][0]
+    rules = [rules for keys, rules in content.rules if key in keys]
 
     if len(rules) > 0:
-        await chat.reply(make_zen_md(rules, wrap=True), parse_mode="Markdown")
+        await chat.reply(content.make_zen_md(rules[0], wrap=True), parse_mode="Markdown")
     else:
         await chat.reply(content.rule_not_found.format(key), parse_mode="Markdown")
 
@@ -133,7 +123,7 @@ async def zen(chat: Chat, message):
     # TODO: fetch it from chat_zen_url = "https://raw.githubusercontent.com/spbpython/orgs-wiki/master/chat/this.md"
 
     await chat.reply(
-        make_zen_md(flatten([rules for _, rules in content.rules])),
+        content.make_zen_md(flatten([rules for _, rules in content.rules])),
         parse_mode="Markdown",
     )
 
@@ -193,46 +183,32 @@ async def peps(chat: Chat, matched):
 @bot.command("/links")
 async def chats(chat: Chat, matched):
     await chat.reply(
-        """
-*SPb Python Chats and Channels*    
-
-- [News Channel](https://t.me/spbpythonnews)
-- [Main chat](https://t.me/spbpython)
-- [Site](https://spbpython.guru/)
-- [Drinkup & Bar Hopping](https://t.me/joinchat/BA9zxD_Df8rTlNpiXhDSig) 
-- [Biking](https://t.me/joinchat/B-0myFDmUqDvwWU4e58WQw)
-- [IT-FIT](https://t.me/joinchat/B-0myE_XfRFQvoLiVscDGQ)
-- [Facebook Group](https://www.facebook.com/groups/spbpython/) and [Page](https://www.facebook.com/spbpython/)
-- [Meetup.com](https://www.meetup.com/ru-RU/spbpython/)""",
+        content.about_chat,
         parse_mode="Markdown",
     )
 
 
-functions = ['/version', 'import __hello__', 
-            'import this', 'zen', '/about', 
-            'from this import hi', 'from this import gist', 
-            'from this import long_better', 'from this import correct', 
-            'from this import offtopic', 'from this import politeness', 
-            'from this import ask', 'from this import mood',
-            'from this import voice', 'from this import git']
-
-
 @bot.inline
 async def inline_query(query):
-    """Find autocomplite for inline query"""
+    """Autocomplite for inline query"""
 
-    results = []
+    commands = []
     
-    for func in functions:
-        if query.query in func:
-            results.append({
-                "type": "article",
-                "title": func,
-                "id": "{}".format(uuid4()),
-                "input_message_content": {"message_text": func},
-            }
-            )
-    return query.answer(results)
+    for command in content.inline_commands:
+        if query.query in command:
+            commands.append(command)
+            
+    if "from " in query.query:
+        for command in content.import_queries:
+            if query.query in command:
+                commands.append(command)
+    
+    return [{
+        "type": "article",
+        "title": command,
+        "id": f"{uuid4()}",
+        "input_message_content": {"message_text": command},
+    } for command in commands[:7]]
 
 
 if __name__ == "__main__":

@@ -1,3 +1,5 @@
+
+
 chat_rules_header = """
 *The Zen of SPb Python Chat*
 _(Inspired by "The Zen of Python, by Tim Peters")_
@@ -5,9 +7,10 @@ _(Inspired by "The Zen of Python, by Tim Peters")_
 
 
 rule_not_found = """
+```
 Traceback (most recent call last):
   File "<stdin>", line 1, in <module>
-ImportError: cannot import name '{}'
+ImportError: cannot import name '{}'```
 """
 
 
@@ -64,3 +67,38 @@ Help on module this:
 {examples}
 ```
 """
+
+about_chat = """
+*SPb Python Chats and Channels*    
+
+- [News Channel](https://t.me/spbpythonnews)
+- [Main chat](https://t.me/spbpython)
+- [Site](https://spbpython.guru/)
+- [Drinkup & Bar Hopping](https://t.me/joinchat/BA9zxD_Df8rTlNpiXhDSig) 
+- [Biking](https://t.me/joinchat/B-0myFDmUqDvwWU4e58WQw)
+- [IT-FIT](https://t.me/joinchat/B-0myE_XfRFQvoLiVscDGQ)
+- [Facebook Group](https://www.facebook.com/groups/spbpython/) and [Page](https://www.facebook.com/spbpython/)
+- [Meetup.com](https://www.meetup.com/ru-RU/spbpython/)
+"""
+
+def make_zen_md(rules, wrap=False):
+    rules = ["- {}".format(rule) for rule in rules]
+
+    if wrap:
+        rules.insert(0, "...")
+        rules.append("...")
+
+    return "\n".join([chat_rules_header, *rules])
+
+
+inline_commands = (
+    "/version", "import __hello__", "import this", "zen", "/about", "from this import"
+)
+
+
+def make_queries_from_rules(rules):
+    return [
+        f"from this import {keys[0]}" for keys, _ in rules
+    ]
+
+import_queries = make_queries_from_rules(rules)
