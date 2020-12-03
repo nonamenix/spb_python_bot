@@ -117,3 +117,4 @@ ENV/
 .ropeproject
 .pytest_cache/*
 .vscode/*
+spb_python_bot.edn
