@@ -81,40 +81,14 @@ Match peps in messages and send links for them.
 /links
 ```
 
-Environment variables
----------------------
+How to run
+----------
 
-```basg
+```bash
 BOT_TOKEN  # telegram bot token
 BOT_LOGGING_LEVEL  # logging level
 MODERATORS  # moderators identifiers splited by space
 DEBUG  # bot autoreload on file save
 ```
 
-Run with condo
---------------
-[Condo](https://github.com/prepor/condo) — reliable and simple idempotent supervisor for Docker containers.
-
-
-```edn
-{
-    :spec {
-        :Name "spb_python_bot"
-        :Image "nonamenix/spb_python_bot:latest"
-        :Env [
-            "BOT_TOKEN=339614247:************************************"
-            "MODERATORS=132982472 59323058"
-            "HEALTHCHECKIO_TOKEN=********-****-****-****-************"
-            "BOT_LOGGING_LEVEL=ERROR"
-            "MONGO_URL=mongodb://spbpythonbot:Lg2vxjoBT3oRmDd4XnyJ2VD6hJC3jb@ds046677.mlab.com:46677/spb_python_bot"
-            "MONGO_HEALTHCHECKIO_TOKEN=fb6c17b8-a64a-41bf-83c7-267ee5124368"
-        ]
-        :HostConfig {
-            :RestartPolicy {:Name "always"}
-            :NetworkMode "petprojects_default"
-        }
-    }
-
-    :health-timeout 45
-}
-```
+Put it to `.env` file and run with do `docker-compose up`

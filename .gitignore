@@ -118,3 +118,4 @@ ENV/
 .pytest_cache/*
 .vscode/*
 spb_python_bot.edn
+spb_python_bot.yml
