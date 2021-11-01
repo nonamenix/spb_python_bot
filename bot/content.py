@@ -73,12 +73,11 @@ about_chat = """
 
 - [News Channel](https://t.me/spbpythonnews)
 - [Main chat](https://t.me/spbpython)
-- [Site](https://spbpython.guru/)
-- [Drinkup & Bar Hopping](https://t.me/joinchat/BA9zxD_Df8rTlNpiXhDSig) 
+- [Site](https://spbpython.dev/)
+- [Drinkup & Bar Hopping](https://t.me/joinchat/BA9zxD_Df8rTlNpiXhDSig)
 - [Biking](https://t.me/joinchat/B-0myFDmUqDvwWU4e58WQw)
-- [IT-FIT](https://t.me/joinchat/B-0myE_XfRFQvoLiVscDGQ)
 - [Facebook Group](https://www.facebook.com/groups/spbpython/) and [Page](https://www.facebook.com/spbpython/)
-- [Meetup.com](https://www.meetup.com/ru-RU/spbpython/)
+- [Meetup.com](https://www.meetup.com/spbpython/)
 """
 
 
