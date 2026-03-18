@@ -1,5 +1,5 @@
 services:
   bot:
-    image: ghcr.io/${GITHUB_REPOSITORY:-your-org/spb_python_bot}:latest
+    image: ghcr.io/nonamenix/spb_python_bot:latest
     env_file: .env
     restart: unless-stopped
