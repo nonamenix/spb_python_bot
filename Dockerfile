@@ -1,20 +1,15 @@
-FROM python:3.6.8-slim
-LABEL mainainer="Danil Ivanov"
+FROM python:3.13-slim
+LABEL maintainer="Danil Ivanov"
 
-ENV PYTHONBUFFERED 1
+ENV PYTHONUNBUFFERED=1
 
-ENV BOT_LOCAL_SRC ./bot/
-ENV BOT_HOME /home/bot
-ENV BOT_SRC /home/bot/app/src
+WORKDIR /app
 
-RUN mkdir -p $BOT_HOME/logs \
-    $BOT_HOME/app/src
+COPY bot/requirements.txt .
+RUN pip install --no-cache-dir -r requirements.txt
 
-WORKDIR $BOT_SRC
+COPY bot/ .
 
-ADD $BOT_LOCAL_SRC $BOT_SRC
-RUN pip3 install -r requirements.txt
+HEALTHCHECK --interval=30s --timeout=3s CMD true
 
-HEALTHCHECK --interval=30s --timeout=3s CMD true  # need for condo
-
-CMD [ "python3", "./main.py" ]
+CMD ["python", "main.py"]
