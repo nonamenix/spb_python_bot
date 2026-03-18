@@ -1,105 +1,108 @@
-import os
+import asyncio
 import logging
+import os
+import re
 from datetime import timedelta, datetime
 from urllib.parse import quote
 
-from aiotg import Chat, aiohttp
+import aiohttp
+from aiogram import Bot, Dispatcher, F
+from aiogram.filters import Command, BaseFilter
+from aiogram.types import Message
 
-from bot import Bot
 import content
 
-# Logging
 logging.basicConfig(
     level=getattr(logging, os.environ.get("BOT_LOGGING_LEVEL", "DEBUG")),
     format="%(asctime)s | %(name)s | %(levelname)s - %(message)s",
 )
 logger = logging.getLogger(__name__)
-ch = logging.StreamHandler()
-logger.addHandler(ch)
 
-DEBUG = "DEBUG" in os.environ
 VERSION_URL = "https://img.shields.io/github/tag/nonamenix/spb_python_bot.json"
-
+HEALTHCHECKIO_URL = "https://hchk.io/{token}"
+HEALTHCHECKIO_INTERVAL = 150
+USER_AGENT = "SPbPython / 0.5.10"
 
 flatten = lambda l: [item for sublist in l for item in sublist]
 
 
-def make_zen_md(rules, wrap=False):
-    rules = ["- {}".format(rule) for rule in rules]
-
-    if wrap:
-        rules.insert(0, "...")
-        rules.append("...")
-
-    return "\n".join([content.chat_rules_header, *rules])
-
-
 def get_moderators():
-    moderators = [132982472, 59323058]  # nonamenix  # lig11
     try:
-        moderators = os.environ["MODERATORS"]
+        moderators = [int(m.strip()) for m in os.environ["MODERATORS"].split(" ")]
     except KeyError:
-        pass
-    else:
-        moderators = [int(m.strip()) for m in moderators.split(" ")]
+        moderators = [132982472]  # nonamenix 
     logger.info("Moderators: %s", moderators)
     return moderators
 
 
-# spb_python_bot
-bot = Bot(
-    api_token=os.environ["BOT_TOKEN"],
-    healthcheckio_token=os.environ["HEALTHCHECKIO_TOKEN"],
-    moderators=get_moderators(),
-    mongo_url=os.environ.get("MONGO_URL"),
-    mongo_healthcheckio_token=os.environ.get("MONGO_HEALTHCHECKIO_TOKEN"),
-)
+MODERATORS = get_moderators()
+
+
+class ModeratorFilter(BaseFilter):
+    async def __call__(self, message: Message) -> bool:
+        return message.from_user is not None and message.from_user.id in MODERATORS
+
+
+def make_zen_md(rules, wrap=False):
+    rules = ["- {}".format(rule) for rule in rules]
+    if wrap:
+        rules.insert(0, "...")
+        rules.append("...")
+    return "\n".join([content.chat_rules_header, *rules])
 
 
 def no_more_than_once_every(interval=timedelta(minutes=5), key: str = None):
     restrictions = {}
 
     def actual_decorator(func):
-        def wrapper(*args, **kwargs):
-            result = None
-            try:
-                restriction = restrictions[key]
-            except KeyError:
-                restrictions[key] = datetime.now() + interval
-                result = func(*args, **kwargs)
-            else:
-                if datetime.now() > restriction:
-                    restrictions[key] = datetime.now() + interval
-                    result = func(*args, **kwargs)
-
-            return result
+        async def wrapper(message: Message):
+            now = datetime.now()
+            if key not in restrictions or now > restrictions[key]:
+                restrictions[key] = now + interval
+                await func(message)
 
         return wrapper
 
     return actual_decorator
 
 
-@bot.command("/version")
-async def version(chat, message):
+bot = Bot(token=os.environ["BOT_TOKEN"])
+dp = Dispatcher()
+
+
+async def still_alive():
+    token = os.environ.get("HEALTHCHECKIO_TOKEN")
+    if not token:
+        return
+    while True:
+        try:
+            async with aiohttp.ClientSession(headers={"User-Agent": USER_AGENT}) as session:
+                await session.get(HEALTHCHECKIO_URL.format(token=token))
+        except Exception as e:
+            logger.error("Healthcheck ping failed: %s", e)
+        await asyncio.sleep(HEALTHCHECKIO_INTERVAL)
+
+
+@dp.message(Command("version"))
+async def version(message: Message):
     async with aiohttp.ClientSession() as session:
         async with session.get(VERSION_URL) as resp:
             data = await resp.json()
-            version = data["value"]
-            await chat.reply("version: {}".format(version))
+            await message.reply("version: {}".format(data["value"]))
 
 
-@bot.moderator_command("/?ping$")
-async def ping(chat, message):
-    await chat.reply("pong")
+@dp.message(Command("ping"), ModeratorFilter())
+async def ping(message: Message):
+    await message.reply("pong")
 
 
-@bot.command("/?import __hello__")
-async def hello(chat: Chat, message):
-    await chat.reply("Hello world")
+@dp.message(F.text.regexp(r"^/?import __hello__$"))
+async def hello(message: Message):
+    await message.reply("Hello world")
 
 
-@bot.command("/?help\(this\)")
-async def rule_help(chat: Chat, message):
+@dp.message(F.text.regexp(r"^/?help\(this\)$"))
+async def rule_help(message: Message):
     body = []
     for keys, rules in content.rules:
         if len(keys) > 0:
@@ -109,61 +112,55 @@ async def rule_help(chat: Chat, message):
             body.append(row)
             body.extend(rules)
             body.append("")
-
-    await chat.reply(
+    await message.reply(
         content.help_test.format(examples="\n".join(body)), parse_mode="Markdown"
     )
 
 
-@bot.command("/?from this import (?P<key>.+)")
-async def rule_of_zen(chat: Chat, matched):
-    key = matched.group("key")
-    rules = [rules for keys, rules in content.rules if key in keys][0]
+@dp.message(F.text.regexp(r"^/?from this import (?P<key>.+)"))
+async def rule_of_zen(message: Message):
+    m = re.search(r"^/?from this import (?P<key>.+)", message.text)
+    key = m.group("key")
+    matching = [rules for keys, rules in content.rules if key in keys]
+    if not matching or not matching[0]:
+        await message.reply(content.rule_not_found.format(key), parse_mode="Markdown")
+        return
+    await message.reply(make_zen_md(matching[0], wrap=True), parse_mode="Markdown")
 
-    if len(rules) > 0:
-        await chat.reply(make_zen_md(rules, wrap=True), parse_mode="Markdown")
-    else:
-        await chat.reply(content.rule_not_found.format(key), parse_mode="Markdown")
 
-
-@bot.command("/?rules")
-@bot.command("/?zen")
-@bot.command("/?import this")
+@dp.message(F.text.regexp(r"^/?(rules|zen|import this)$"))
 @no_more_than_once_every(interval=timedelta(minutes=5), key="zen_of_chat")
-async def zen(chat: Chat, message):
-    # TODO: fetch it from chat_zen_url = "https://raw.githubusercontent.com/spbpython/orgs-wiki/master/chat/this.md"
-
-    await chat.reply(
+async def zen(message: Message):
+    await message.reply(
         make_zen_md(flatten([rules for _, rules in content.rules])),
         parse_mode="Markdown",
     )
 
 
-def reply_with_let_me_search_for_you(chat: Chat, search_url: str, query: str):
-    return chat.send_text(
+async def reply_with_let_me_search_for_you(message: Message, search_url: str, query: str):
+    await message.reply(
         search_url.format(query=quote(query)),
-        reply_to_message_id=chat.message["message_id"],
-        disable_web_page_preview="true",
+        disable_web_page_preview=True,
     )
 
 
-@bot.moderator_command("/g (?P<query>.+)")
-@bot.moderator_command("/google (?P<query>.+)")
-async def google(chat: Chat, matched):
+@dp.message(F.text.regexp(r"^/?(g|google) (?P<query>.+)"), ModeratorFilter())
+async def google(message: Message):
+    m = re.search(r"^/?(g|google) (?P<query>.+)", message.text)
     await reply_with_let_me_search_for_you(
-        chat,
+        message,
         search_url="https://www.google.ru/search?q={query}",
-        query=matched.group("query"),
+        query=m.group("query"),
     )
 
 
-@bot.moderator_command("/w (?P<query>.+)")
-@bot.moderator_command("/wiki (?P<query>.+)")
-async def wiki(chat: Chat, matched):
+@dp.message(F.text.regexp(r"^/?(w|wiki) (?P<query>.+)"), ModeratorFilter())
+async def wiki(message: Message):
+    m = re.search(r"^/?(w|wiki) (?P<query>.+)", message.text)
     await reply_with_let_me_search_for_you(
-        chat,
+        message,
         search_url="https://en.wikipedia.org/w/index.php?search={query}",
-        query=matched.group("query"),
+        query=m.group("query"),
     )
 
 
@@ -176,39 +173,36 @@ async def is_pep_exists(pep):
             return resp.status == 200
 
 
-@bot.command("\#.*pep-?(?P<pep>\d{1,4})")
-async def peps(chat: Chat, matched):
+@dp.message(F.text.regexp(re.compile(r"\#.*pep-?\d{1,4}", re.IGNORECASE)))
+async def peps(message: Message):
+    m = re.search(r"\#.*pep-?(\d{1,4})", message.text, re.IGNORECASE)
+    if not m:
+        return
     try:
-        pep = int(matched.group("pep"))
+        pep = int(m.group(1))
     except ValueError:
-        pass
-    else:
-        if await is_pep_exists(pep):
-            await chat.send_text(
-                pep_link.format(pep), reply_to_message_id=chat.message["message_id"]
-            )
+        return
+    if await is_pep_exists(pep):
+        await message.reply(pep_link.format(pep))
 
 
-@bot.command("/about")
-@bot.command("/chats")
-@bot.command("/links")
-async def chats(chat: Chat, matched):
-    await chat.reply(
+@dp.message(Command(commands=["about", "chats", "links"]))
+async def chats(message: Message):
+    await message.reply(
         """
-*SPb Python Chats and Channels*    
-
+*SPb Python Chats and Channels:*
 - [News Channel](https://t.me/spbpythonnews)
-- [Main chat](https://t.me/spbpython)
-- [Site](https://spbpython.guru/)
-- [Drinkup & Bar Hopping](https://t.me/joinchat/BA9zxD_Df8rTlNpiXhDSig) 
-- [Biking](https://t.me/joinchat/B-0myFDmUqDvwWU4e58WQw)
-- [IT-FIT](https://t.me/joinchat/B-0myE_XfRFQvoLiVscDGQ)
-- [Facebook Group](https://www.facebook.com/groups/spbpython/) and [Page](https://www.facebook.com/spbpython/)
-- [Meetup.com](https://www.meetup.com/ru-RU/spbpython/)""",
+- [Main chat](https://t.me/+S0GjOFmLIyBjZWYy)
+- [Drinkup & Bar Hopping](https://t.me/joinchat/BA9zxD_Df8rTlNpiXhDSig)""",
         parse_mode="Markdown",
     )
 
 
+async def main():
+    asyncio.create_task(still_alive())
+    await dp.start_polling(bot)
+
+
 if __name__ == "__main__":
     logger.info("Running...")
-    bot.run(debug=DEBUG)
+    asyncio.run(main())

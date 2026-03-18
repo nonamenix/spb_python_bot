@@ -14,6 +14,7 @@ import this
 [Read Zen of SPb Python Chat](https://github.com/spbpython/orgs-wiki/blob/master/chat/this.md)
 
 ### Help with `this`
+
 ```python
 help(this)
 
@@ -42,26 +43,17 @@ Hello world
 -----------
 
 ```python
-import __hello__ 
-``` 
+import __hello__
+```
 
 Let me google for you
 ---------------------
 
-### Google
-
 Команда разрешена только для модератора
 
-```
+```text
 /google query
 /g query
-```
-
-### Wiki 
-
-Команда разрешена только для модератора
-
-```
 /wiki query
 /w query
 ```
@@ -71,50 +63,61 @@ PEPs link
 
 Match peps in messages and send links for them.
 
-
-### Chats
+Chats
+-----
 
 Показывает чаты и ссылки
 
-```
+```text
 /chats
 /links
+/about
+```
+
+Other commands
+--------------
+
+```text
+/version   — show current bot version
+/ping      — moderator-only ping/pong check
+/rules     — show all chat rules (also: /zen, import this)
 ```
 
 Environment variables
 ---------------------
 
-```basg
-BOT_TOKEN  # telegram bot token
-BOT_LOGGING_LEVEL  # logging level
-MODERATORS  # moderators identifiers splited by space
-DEBUG  # bot autoreload on file save
+```bash
+BOT_TOKEN              # telegram bot token (required)
+BOT_LOGGING_LEVEL      # logging level: DEBUG, INFO, WARNING, ERROR (default: DEBUG)
+MODERATORS             # moderator Telegram user IDs separated by spaces
+HEALTHCHECKIO_TOKEN    # healthcheck.io ping token (optional)
 ```
 
-Run with condo
---------------
-[Condo](https://github.com/prepor/condo) — reliable and simple idempotent supervisor for Docker containers.
+See [.env.example](.env.example) for a ready-to-use template.
 
+Run with Docker
+---------------
 
-```edn
-{
-    :spec {
-        :Name "spb_python_bot"
-        :Image "nonamenix/spb_python_bot:latest"
-        :Env [
-            "BOT_TOKEN=339614247:************************************"
-            "MODERATORS=132982472 59323058"
-            "HEALTHCHECKIO_TOKEN=********-****-****-****-************"
-            "BOT_LOGGING_LEVEL=ERROR"
-            "MONGO_URL=mongodb://spbpythonbot:Lg2vxjoBT3oRmDd4XnyJ2VD6hJC3jb@ds046677.mlab.com:46677/spb_python_bot"
-            "MONGO_HEALTHCHECKIO_TOKEN=fb6c17b8-a64a-41bf-83c7-267ee5124368"
-        ]
-        :HostConfig {
-            :RestartPolicy {:Name "always"}
-            :NetworkMode "petprojects_default"
-        }
-    }
+**Build and run locally:**
 
-    :health-timeout 45
-}
+```bash
+cp .env.example .env
+# edit .env and set BOT_TOKEN
+docker compose up --build
+```
+
+**Deploy to a remote server:**
+
+The image is built and pushed to GitHub Container Registry on every push to `master`.
+
+```bash
+# Copy deploy/docker-compose.yml and .env to the server, then:
+DEPLOY_HOST=user@yourserver ./deploy/deploy.sh
+```
+
+Or manually on the server:
+
+```bash
+docker compose pull
+docker compose up -d
 ```
